@@ -11,14 +11,15 @@ type Props = {
   }
 }
 
+// export const dynamic = 'force-dynamic'
+
 export default async function CampDetailPage({ params: { slug } }: Props) {
   const contentData = await getContentData(Number(slug))
-  const { title, description, like, event, company } = contentData
   return (
     <>
-      <DetailHeader title={title} description={description} like={like} event={event} company={company} />
+      <DetailHeader content={contentData} />
       <section className="flex gap-16 flex-col my-16 justify-center items-center w-full max-w-4xl mx-auto">
-        <OperatedOn company={company} />
+        <OperatedOn company={contentData.company} />
         <EducationProcessFeature contentData={contentData} />
         <ClassSchedule contentData={contentData} />
       </section>

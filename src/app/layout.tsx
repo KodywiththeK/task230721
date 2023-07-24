@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Open_Sans } from 'next/font/google'
 import StyledComponentsRegistry from '@/context/AntdRegistry'
 import Header from '@/components/Header'
+import ReactQueryProviders from '@/context/ReactQueryProvider'
 
 const openSans = Open_Sans({ subsets: ['latin'] })
 
@@ -17,7 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${openSans.className}`}>
         <Header />
         {/* <StyledComponentsRegistry> */}
-        <main className="w-full mx-auto max-w-[1200px] mt-8">{children}</main>
+        <ReactQueryProviders>
+          <main className="w-full mx-auto max-w-[1200px] mt-8">{children}</main>
+        </ReactQueryProviders>
         {/* </StyledComponentsRegistry> */}
       </body>
     </html>

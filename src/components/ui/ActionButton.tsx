@@ -1,35 +1,32 @@
-'use client'
-import React from 'react'
-import { Button, Popover } from 'antd'
-import { BsThreeDots } from 'react-icons/bs'
+import { useContents } from '@/hooks/contents'
+import { Content } from '@/service/content'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
+import HeartIcon from './icons/HeartIcon'
+import { useQuery } from '@tanstack/react-query'
 
-export default function ActionButton({ id }: { id: number }) {
-  const onClickAction = (e: React.MouseEvent<HTMLButtonElement>, item: string, id: number) => {
+export default function ActionButton({ content }: { content: Content }) {
+  const { setLike } = useContents()
+  const [likeState, setLikeState] = useState(content?.likes)
+  const router = useRouter()
+
+  // const { refetch } = useQuery({
+  //   queryKey: [`${content.id}`, 'content'],
+  //   queryFn: () => fetch(`/api/contents/${content.id}`),
+  // })
+
+  const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    console.log(id, item)
+    e.stopPropagation()
+    setLikeState(!likeState)
+    await setLike(content)
+    // await refetch()
+    router.refresh()
   }
 
-  const content = (
-    <div className="p-1 flex flex-col">
-      {['수정하기', '삭제하기'].map((item) => (
-        <button onClick={(e) => onClickAction(e, item, id)} key={item} className="hover:bg-sky-300 px-2 py-1 rounded-lg">
-          {item}
-        </button>
-      ))}
-    </div>
-  )
   return (
-    <Popover content={content}>
-      <Button
-        type="primary"
-        className="bg-neutral-100"
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-        }}
-      >
-        <BsThreeDots color="black" />
-      </Button>
-    </Popover>
+    <button onClick={(e) => handleLike(e)} className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-[#975dff]">
+      찜하기 <HeartIcon content={content} size={24} color="yellow" likeState={likeState} />
+    </button>
   )
 }

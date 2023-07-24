@@ -11,7 +11,7 @@ export default function EducationProcessFeature({ contentData }: { contentData: 
   }
 
   return (
-    <section>
+    <section className="w-full">
       <DetailSubtitle icon={icon} text={text} desc={desc} />
       <KeywordCircles keywords={contentData.stack} />
     </section>

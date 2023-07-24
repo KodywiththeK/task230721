@@ -1,24 +1,18 @@
 'use client'
 import { HEADING_STYLE } from '@/constant/style'
+import { useContents } from '@/hooks/contents'
+import { Content } from '@/service/content'
 import Image from 'next/image'
 import React from 'react'
+import ActionButton from './ui/ActionButton'
 import EventTag from './ui/EventTag'
-import HeartIcon from './ui/icons/HeartIcon'
 
 type Props = {
-  like: boolean
-  title: string
-  description: string
-  event: string
-  company: string
+  content: Content
 }
 
-export default function DetailHeader({ like, title, description, event, company }: Props) {
-  const handleLike = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    console.log(like ? '좋아요 취소' : '좋아요')
-  }
+export default function DetailHeader({ content }: Props) {
+  const { title, description, event } = content
 
   return (
     <section className="relative w-full h-[360px]">
@@ -30,9 +24,7 @@ export default function DetailHeader({ like, title, description, event, company 
             {text}
           </div>
         ))}
-        <button onClick={(e) => handleLike(e)} className="flex items-center gap-1 px-4 py-1.5 rounded-lg bg-[#975dff]">
-          찜 <HeartIcon like={like} size={24} color="yellow" />
-        </button>
+        <ActionButton content={content} />
       </div>
     </section>
   )

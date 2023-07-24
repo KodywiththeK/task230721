@@ -1,23 +1,19 @@
 'use client'
-import React from 'react'
+import { Content } from '@/service/content'
+import React, { useEffect, useState } from 'react'
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai'
+import { useRouter } from 'next/navigation'
+import { useContents } from '@/hooks/contents'
 
 type Props = {
-  like: boolean
+  content: Content
   size: number
   color?: string
+  likeState: boolean
 }
 
-export default function HeartIcon({ like, size, color = 'red' }: Props) {
-  const handleLike = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    e.stopPropagation()
-    console.log(like ? '좋아요 취소' : '좋아요')
-  }
+export default function HeartIcon({ content, size, color = 'red', likeState }: Props) {
+  const router = useRouter()
 
-  return (
-    <div onClick={handleLike} className="p-2">
-      {like ? <AiFillHeart size={size} color={color} /> : <AiOutlineHeart size={size} />}
-    </div>
-  )
+  return <div className="p-2">{likeState ? <AiFillHeart size={size} color={color} /> : <AiOutlineHeart size={size} />}</div>
 }
