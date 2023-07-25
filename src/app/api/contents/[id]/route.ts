@@ -21,11 +21,12 @@ export async function DELETE(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const { id } = await req.json()
-  if (id === undefined) {
+  const { id, info } = await req.json()
+  console.log(id, info)
+  if (id === undefined && !info) {
     return new Response('Bad Request', { status: 400 })
   }
-  return updateCamp(id)
+  return updateCamp(id, info)
     .then((res) => NextResponse.json(res))
     .catch((error) => new Response(JSON.stringify(error), { status: 500 }))
 }

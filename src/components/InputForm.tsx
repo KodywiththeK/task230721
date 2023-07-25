@@ -1,10 +1,10 @@
 'use client'
-import React, { useState } from 'react'
-import { PlusOutlined } from '@ant-design/icons'
-import { Button, DatePicker, Form, Input, Select } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Button, Form, Input, Select } from 'antd'
 import { useRouter } from 'next/navigation'
+import { useContents } from '@/hooks/contents'
+import { Content } from '@/service/content'
 
-const { RangePicker } = DatePicker
 const { TextArea } = Input
 
 type EventType = 'event' | '채용연계' | '전공무관' | '전액지원'
@@ -15,12 +15,17 @@ export interface NewContentType {
   stack: string
   event: EventType
   deadline: string
-  start: string | string[]
+  start: string
   end: string
-  likes: string
+  likes: boolean
 }
 
-export default function InputForm() {
+export type Props = {
+  content?: Content
+  id?: string
+}
+
+export default function InputForm({ content, id }: Props) {
   const router = useRouter()
   const initialData = {
     title: '',
@@ -31,17 +36,34 @@ export default function InputForm() {
     deadline: '',
     start: '',
     end: '',
-    likes: 'false',
+    likes: false,
   }
+
   const [info, setInfo] = useState<NewContentType>(initialData)
+  useEffect(() => {
+    content &&
+      setInfo({
+        title: content?.title,
+        description: content?.description,
+        company: content?.company,
+        stack: content?.stack.join(' '),
+        event: content?.event as EventType,
+        deadline: content?.deadline,
+        start: content?.start,
+        end: content?.end,
+        likes: content?.likes,
+      })
+  }, [content])
   const eventTypes: EventType[] = ['event', '채용연계', '전공무관', '전액지원']
 
+  const { setCamp, editCamp, refetchContents } = useContents()
   const submitHandler = async () => {
-    const data = { ...info, stack: info.stack.split(' ') }
-    await fetch('/api/contents', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
+    if (content === undefined && id === undefined) {
+      await setCamp(info)
+    } else {
+      await editCamp({ id: Number(id), info: info })
+    }
+    await refetchContents()
     router.push('/')
   }
 

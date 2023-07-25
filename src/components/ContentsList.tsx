@@ -1,9 +1,5 @@
 import { Content } from '@/service/content'
-import Link from 'next/link'
 import React from 'react'
-import ActionButton from './ui/MenuButton'
-import EventTag from './ui/EventTag'
-import HeartIcon from './ui/icons/HeartIcon'
 import ContentCard from './ContentCard'
 
 type Props = {

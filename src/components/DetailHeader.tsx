@@ -1,6 +1,5 @@
 'use client'
 import { HEADING_STYLE } from '@/constant/style'
-import { useContents } from '@/hooks/contents'
 import { Content } from '@/service/content'
 import Image from 'next/image'
 import React from 'react'

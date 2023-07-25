@@ -1,9 +1,8 @@
 'use client'
 import { Content } from '@/service/content'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai'
 import { useRouter } from 'next/navigation'
-import { useContents } from '@/hooks/contents'
 
 type Props = {
   content: Content
@@ -13,7 +12,5 @@ type Props = {
 }
 
 export default function HeartIcon({ content, size, color = 'red', likeState }: Props) {
-  const router = useRouter()
-
   return <div className="p-2">{likeState ? <AiFillHeart size={size} color={color} /> : <AiOutlineHeart size={size} />}</div>
 }

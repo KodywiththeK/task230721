@@ -17,22 +17,16 @@ export interface Content {
 }
 
 export const getAllContents = async () => {
-  // const filePath = path.join(process.cwd(), 'data', 'content.json')
-  // return readFile(filePath, 'utf-8').then<Content[]>(JSON.parse)
-  return fetch('https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps').then<Content[]>((res) => res.json())
+  return fetch('https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps', { cache: 'no-cache' }).then<Content[]>((res) => res.json())
 }
 
 export async function getContentData(id: number): Promise<Content> {
-  console.log(id)
-  // const contents = await getAllContents()
-  // const content = contents.find((content) => content.id === id)
-  // if (!content) throw new Error(`${id}번에 해당하는 콘텐츠를 찾을 수 없음`)
   return fetch(`https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps/${id}`, { cache: 'no-store' }).then<Content>((res) => res.json())
 }
 
 export async function handleLikes(id: string, likes: string) {
   return fetch(`https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps/${id}`, {
-    method: 'POST',
+    method: 'PATCH',
     body: JSON.stringify({
       id,
       likes: likes,
@@ -47,14 +41,15 @@ export async function createCamp(info: NewContentType) {
   }).then((res) => res.json())
 }
 
-export async function deleteCamp(id: string) {
+export async function deleteCamp(id: number) {
   return fetch(`https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps/${id}`, {
     method: 'DELETE',
   }).then((res) => res.json())
 }
 
-export async function updateCamp(id: string) {
+export async function updateCamp(id: number, info: NewContentType) {
   return fetch(`https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps/${id}`, {
     method: 'PUT',
+    body: JSON.stringify(info),
   }).then((res) => res.json())
 }

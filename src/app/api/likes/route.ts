@@ -1,7 +1,7 @@
 import { handleLikes } from '@/service/content'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(req: NextRequest) {
+export async function PATCH(req: NextRequest) {
   const { id, likes } = await req.json()
   if (id === undefined || likes === undefined) {
     return new Response('Bad Request', { status: 400 })

@@ -8,8 +8,9 @@ import HeartIcon from './ui/icons/HeartIcon'
 import { useContents } from '@/hooks/contents'
 
 export default function ContentCard({ content }: { content: Content }) {
-  const { setLike } = useContents()
+  const { setLike, contents } = useContents()
   const [likeState, setLikeState] = useState(content?.likes)
+  console.log(contents)
 
   const handleLike = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
