@@ -17,15 +17,15 @@ export interface Content {
 }
 
 export const getAllContents = async () => {
-  return fetch('https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps', { cache: 'no-cache' }).then<Content[]>((res) => res.json())
+  return fetch(process.env.API_BASE_URL || '', { cache: 'no-cache' }).then<Content[]>((res) => res.json())
 }
 
 export async function getContentData(id: number): Promise<Content> {
-  return fetch(`https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps/${id}`, { cache: 'no-store' }).then<Content>((res) => res.json())
+  return fetch((process.env.API_BASE_URL || '') + `/${id}`, { cache: 'no-store' }).then<Content>((res) => res.json())
 }
 
 export async function handleLikes(id: string, likes: string) {
-  return fetch(`https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps/${id}`, {
+  return fetch((process.env.API_BASE_URL || '') + `/${id}`, {
     method: 'PATCH',
     body: JSON.stringify({
       id,
@@ -35,20 +35,20 @@ export async function handleLikes(id: string, likes: string) {
 }
 
 export async function createCamp(info: NewContentType) {
-  return fetch('https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps', {
+  return fetch(process.env.API_BASE_URL || '', {
     method: 'POST',
     body: JSON.stringify(info),
   }).then((res) => res.json())
 }
 
 export async function deleteCamp(id: number) {
-  return fetch(`https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps/${id}`, {
+  return fetch((process.env.API_BASE_URL || '') + `/${id}`, {
     method: 'DELETE',
   }).then((res) => res.json())
 }
 
 export async function updateCamp(id: number, info: NewContentType) {
-  return fetch(`https://jgt0ls7201.execute-api.ap-northeast-2.amazonaws.com/dev/camps/${id}`, {
+  return fetch((process.env.API_BASE_URL || '') + `/${id}`, {
     method: 'PUT',
     body: JSON.stringify(info),
   }).then((res) => res.json())
