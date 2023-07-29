@@ -1,21 +1,33 @@
-import React, { useState, useRef } from 'react'
-import './DatePicker.css'
+import React, { useState, useRef, useEffect } from 'react'
+import CalendarForm from './calendarForm'
+import { getDaysInMonth } from './datepicker/getDaysInMonths'
+import { isSameDay } from './datepicker/isSameDay'
+import { makeFormedDate } from './datepicker/makeFormedData'
+import { parseDateStringToDate } from './datepicker/stringToDate'
+
 interface DatePickerProps {
-  onDateChange: (date: Date | null) => void
+  onDateChange: (date: string) => void
+  originalData?: string
 }
 
-const DatePicker: React.FC<DatePickerProps> = ({ onDateChange }) => {
+export default function DatePicker({ onDateChange, originalData }: DatePickerProps) {
   const [showCalendar, setShowCalendar] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const calendarContainerRef = useRef<HTMLDivElement>(null)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
-  const [currentMonth, setCurrentMonth] = useState<number>(selectedDate?.getMonth() || 0)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [currentMonth, setCurrentMonth] = useState<number>(selectedDate ? selectedDate.getMonth() : new Date().getMonth())
+  const [currentYear, setCurrentYear] = useState<number>((selectedDate && selectedDate.getFullYear()) || new Date().getFullYear())
+
+  useEffect(() => {
+    originalData && setSelectedDate(parseDateStringToDate(originalData))
+  }, [originalData])
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date)
     setCurrentMonth(date.getMonth())
-    onDateChange(date)
+    onDateChange(makeFormedDate(date))
     setShowCalendar(false)
+    console.log(makeFormedDate(date))
   }
 
   const handleOutsideClick = (event: MouseEvent) => {
@@ -24,23 +36,17 @@ const DatePicker: React.FC<DatePickerProps> = ({ onDateChange }) => {
     }
   }
 
-  const isSameDay = (date1: Date, date2: Date) => {
-    return date1.getDate() === date2.getDate() && date1.getMonth() === date2.getMonth() && date1.getFullYear() === date2.getFullYear()
-  }
-
-  React.useEffect(() => {
+  useEffect(() => {
     document.addEventListener('mousedown', handleOutsideClick)
     return () => document.removeEventListener('mousedown', handleOutsideClick)
   }, [])
-
-  const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate()
 
   const generateCalendar = () => {
     if (currentMonth === undefined || currentMonth === null) return null
 
     const currentYear = selectedDate?.getFullYear() || new Date().getFullYear()
     const daysInMonth = getDaysInMonth(currentYear, currentMonth)
-    const startOffset = new Date(currentYear, currentMonth, 1).getDay() // The day of the week (0-6) on which the month starts
+    const startOffset = new Date(currentYear, currentMonth, 1).getDay()
 
     let currentDay = 1
     let calendarRows = []
@@ -52,8 +58,10 @@ const DatePicker: React.FC<DatePickerProps> = ({ onDateChange }) => {
           calendarRow.push(<div key={`empty-${day}`} className="text-center py-2"></div>)
         } else if (currentDay <= daysInMonth) {
           const date = new Date(currentYear, currentMonth, currentDay)
+          const isSunday = day === 0
+
           calendarRow.push(
-            <div key={currentDay} className={`text-center py-2 cursor-pointer ${isSameDay(date, selectedDate!) ? 'bg-blue-500 text-white rounded-full' : 'text-gray-800 hover:bg-blue-300'}`} onClick={() => handleDateSelect(date)}>
+            <div key={currentDay} className={`${isSunday && 'text-red-600'} flex justify-center items-center w-full rounded-full aspect-square cursor-pointer ${isSameDay(date, selectedDate!) ? 'bg-blue-600 text-white' : 'text-gray-800 hover:bg-blue-400 hover:text-white'}`} onClick={() => handleDateSelect(date)}>
               {currentDay}
             </div>
           )
@@ -72,53 +80,10 @@ const DatePicker: React.FC<DatePickerProps> = ({ onDateChange }) => {
     return calendarRows
   }
 
-  const handlePrevMonth = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    setCurrentMonth((prevMonth) => (prevMonth > 0 ? prevMonth - 1 : 11))
-  }
-
-  const handleNextMonth = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault()
-    setCurrentMonth((prevMonth) => (prevMonth < 11 ? prevMonth + 1 : 0))
-  }
-
   return (
-    <div className="w-80 relative">
-      <input type="text" ref={inputRef} placeholder="Select a date" readOnly value={selectedDate ? selectedDate.toDateString() : ''} onClick={() => setShowCalendar((prevState) => !prevState)} className="w-48 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer" />
-      {showCalendar && (
-        <div ref={calendarContainerRef} className="left-0 absolute mt-2 z-10 bg-white rounded-lg shadow-lg border">
-          <div className="flex items-center gap-2 justify-between my-2 mx-4">
-            <button className="bg-gray-200 px-2 py-1 rounded-lg" onClick={handlePrevMonth}>
-              {'<'}
-            </button>
-            <div className="text-xl font-semibold">
-              {currentMonth !== undefined && currentMonth !== null
-                ? new Date(selectedDate?.getFullYear() || new Date().getFullYear(), currentMonth).toLocaleString('en-US', {
-                    month: 'long',
-                    year: 'numeric',
-                  })
-                : ''}
-            </div>
-            <button className="bg-gray-200 px-2 py-1 rounded-lg" onClick={handleNextMonth}>
-              {'>'}
-            </button>
-          </div>
-          <div className="w-full p-4 flex flex-col gap-2">
-            <div className="grid grid-cols-7 gap-2">
-              <div className="text-center text-red-600">Sun</div>
-              <div className="text-center text-gray-600">Mon</div>
-              <div className="text-center text-gray-600">Tue</div>
-              <div className="text-center text-gray-600">Wed</div>
-              <div className="text-center text-gray-600">Thu</div>
-              <div className="text-center text-gray-600">Fri</div>
-              <div className="text-center text-blue-600">Sat</div>
-            </div>
-            {generateCalendar()}
-          </div>
-        </div>
-      )}
+    <div className="relative">
+      <input type="text" ref={inputRef} placeholder="Select a date" readOnly value={selectedDate ? makeFormedDate(selectedDate) : '날짜를 선택해주세요'} onClick={() => setShowCalendar((prevState) => !prevState)} className="w-48 px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer" />
+      {showCalendar && <CalendarForm currentMonth={currentMonth} currentYear={currentYear} setCurrentMonth={setCurrentMonth} setCurrentYear={setCurrentYear} generateCalendar={generateCalendar} calendarContainerRef={calendarContainerRef} />}
     </div>
   )
 }
-
-export default DatePicker

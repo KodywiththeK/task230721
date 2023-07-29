@@ -14,7 +14,7 @@ const updateLikes = async (id: number, likes: boolean) => {
 }
 
 const createCamp = async (info: NewContentType) => {
-  const data = { ...info, stack: info.stack.split(' ') }
+  const data = { ...info, stack: info.stack }
   const res = await fetch('/api/contents', {
     method: 'POST',
     body: JSON.stringify(data),
@@ -23,7 +23,7 @@ const createCamp = async (info: NewContentType) => {
 }
 
 const updateCamp = async (id: number, info: NewContentType) => {
-  const data = { ...info, stack: info.stack.split(' ') }
+  const data = { ...info, stack: info.stack }
   const res = await fetch(`/api/contents/${id}`, {
     method: 'PUT',
     body: JSON.stringify({

@@ -2,6 +2,8 @@ import InputForm from '@/components/InputForm'
 import { getContentData } from '@/service/content'
 import React from 'react'
 
+export const dynamic = 'force-dynamic'
+
 export default async function EditCampPage({ params }: { params: { id: string } }) {
   const contentData = await getContentData(Number(params.id))
   return (

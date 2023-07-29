@@ -1,19 +1,17 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Button, Form, Input, Select } from 'antd'
 import { useRouter } from 'next/navigation'
 import { useContents } from '@/hooks/contents'
 import { Content } from '@/service/content'
 import DatePicker from './ui/DatePicker'
-
-const { TextArea } = Input
+import RangePicker from './ui/RangePicker'
 
 type EventType = 'event' | '채용연계' | '전공무관' | '전액지원'
 export interface NewContentType {
   title: string
   description: string
   company: string
-  stack: string
+  stack: string[]
   event: EventType
   deadline: string
   start: string
@@ -32,7 +30,7 @@ export default function InputForm({ content, id }: Props) {
     title: '',
     description: '',
     company: '',
-    stack: '',
+    stack: [],
     event: '' as EventType,
     deadline: '',
     start: '',
@@ -41,13 +39,14 @@ export default function InputForm({ content, id }: Props) {
   }
 
   const [info, setInfo] = useState<NewContentType>(initialData)
+  const [keywordInput, setKeywordInput] = useState<string>('')
   useEffect(() => {
     content &&
       setInfo({
         title: content?.title,
         description: content?.description,
         company: content?.company,
-        stack: content?.stack.join(' '),
+        stack: content?.stack,
         event: content?.event as EventType,
         deadline: content?.deadline,
         start: content?.start,
@@ -58,7 +57,8 @@ export default function InputForm({ content, id }: Props) {
   const eventTypes: EventType[] = ['event', '채용연계', '전공무관', '전액지원']
 
   const { setCamp, editCamp, refetchContents } = useContents()
-  const submitHandler = async () => {
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
     if (content === undefined && id === undefined) {
       await setCamp(info)
     } else {
@@ -68,90 +68,93 @@ export default function InputForm({ content, id }: Props) {
     router.push('/')
   }
 
-  const handleDateChange = (date: Date | null) => {
-    console.log(date)
+  const handleSetKeyword = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === ' ') {
+      setInfo({ ...info, stack: [...info.stack, keywordInput] })
+      setKeywordInput('')
+    }
+  }
+  const handleRemoveKeyword = (e: React.MouseEvent<HTMLLIElement>, idx: number) => {
+    e.preventDefault()
+    setInfo({ ...info, stack: info.stack.filter((_, i) => i !== idx) })
+  }
+
+  const handleDateChange = (date: string) => {
+    setInfo({ ...info, deadline: date })
+  }
+
+  const handleRangeChange = (startDate: string, endDate: string) => {
+    console.log('Selected date range:', startDate, 'to', endDate)
+    setInfo({ ...info, start: startDate, end: endDate })
   }
 
   return (
     <section className="w-full max-w-3xl p-4">
-      <form className="form-control flex flex-col gap-8">
+      <form onSubmit={(e) => submitHandler(e)} className="form-control flex flex-col gap-8">
         <div className="w-full sm:flex gap-2 items-center">
           <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
             <span className="label-text">교육과정 이름</span>
           </label>
-          <input type="text" placeholder="Type here" className="input w-full max-w-xl input-sm md:input-md" />
+          <input type="text" placeholder="Type here" value={info.title} onChange={(e) => setInfo({ ...info, title: e.target.value })} required className="input w-full max-w-xl input-sm md:input-md" />
         </div>
         <div className="w-full sm:flex sm:flex-row gap-2 flex-col sm:items-start">
           <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
             <span className="label-text">상세설명</span>
           </label>
-          <textarea placeholder="Type here" className="textarea w-full max-w-xl textarea-sm md:textarea-md h-32 " />
+          <textarea placeholder="Type here" value={info.description} onChange={(e) => setInfo({ ...info, description: e.target.value })} required className="textarea w-full max-w-xl textarea-sm md:textarea-md h-32 " />
         </div>
         <div className="w-full sm:flex gap-2 items-center ">
           <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
-            <span className="label-text">교육과정 이름</span>
+            <span className="label-text">교육기관 이름</span>
           </label>
-          <input type="text" placeholder="Type here" className="input w-full max-w-xl input-sm md:input-md" />
+          <input type="text" value={info.company} onChange={(e) => setInfo({ ...info, company: e.target.value })} required placeholder="Type here" className="input w-full max-w-xl input-sm md:input-md" />
         </div>
         <div className="w-full sm:flex gap-2 items-center ">
           <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
             <span className="label-text">교육과정 키워드</span>
           </label>
-          <input type="text" placeholder="Type here" className="input w-full max-w-xl input-sm md:input-md" />
+          {info.stack.length > 0 && (
+            <ul className="flex items-center gap-2 py-2 flex-wrap">
+              {info.stack.map((item, idx) => (
+                <li key={idx} onClick={(e) => handleRemoveKeyword(e, idx)} className=" cursor-pointer bg-green-100 shadow rounded-lg p-2">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          )}
+          <input type="text" placeholder="띄어쓰기로 구분해주세요" onKeyDown={(e) => handleSetKeyword(e)} value={keywordInput} onChange={(e) => setKeywordInput(e.target.value)} className="input w-full max-w-xl input-sm md:input-md" />
         </div>
         <div className="w-full sm:flex gap-2 items-center ">
           <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
             <span className="label-text">이벤트</span>
           </label>
-          <select className="select select-sm md:select-md w-full max-w-xl">
-            <option value={'event'}>event</option>
-            <option value={'채용연계'}>채용연계</option>
-            <option value={'전공무관'}>전공무관</option>
-            <option value={'전액지원'}>전액지원</option>
+          <select value={info.event} onChange={(e) => setInfo({ ...info, event: e.target.value as EventType })} className="select select-sm md:select-md w-full max-w-xl">
+            <option disabled value="">
+              이벤트를 선택해주세요
+            </option>
+            {eventTypes.map((event, idx) => (
+              <option key={idx} value={event}>
+                {event}
+              </option>
+            ))}
           </select>
         </div>
         <div className="w-full sm:flex gap-2 items-center ">
           <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
             <span className="label-text">모집 마감 날짜</span>
           </label>
-          <DatePicker onDateChange={handleDateChange} />
+          <DatePicker originalData={info.deadline} onDateChange={handleDateChange} />
         </div>
+        <div className="w-full sm:flex gap-2 items-center ">
+          <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
+            <span className="label-text">수업기간</span>
+          </label>
+          <RangePicker originStartDate={info.start} originEndDate={info.end} onRangeChange={handleRangeChange} />
+        </div>
+        <button className="btn btn-success" type="submit">
+          교육과정 등록하기
+        </button>
       </form>
-      <Form labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} layout="horizontal" style={{ maxWidth: 800 }} onFinish={submitHandler}>
-        <Form.Item label="교육과정 이름">
-          <Input value={info.title} onChange={(e) => setInfo({ ...info, title: e.target.value })} required />
-        </Form.Item>
-        <Form.Item label="상세 설명">
-          <TextArea rows={4} value={info.description} onChange={(e) => setInfo({ ...info, description: e.target.value })} required />
-        </Form.Item>
-        <Form.Item label="교육기관 이름">
-          <Input value={info.company} onChange={(e) => setInfo({ ...info, company: e.target.value })} required />
-        </Form.Item>
-        <Form.Item label="교육과정 키워드">
-          <Input placeholder="띄어쓰기로 구분해주세요" value={info.stack} onChange={(e) => setInfo({ ...info, stack: e.target.value })} required />
-        </Form.Item>
-        <Form.Item label="이벤트">
-          <Select value={info.event} onChange={(value) => setInfo({ ...info, event: value })}>
-            {eventTypes.map((event, idx) => (
-              <Select.Option key={idx} value={event} required>
-                {event}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        <Form.Item label="모집 마감 날짜">
-          <Input value={info.deadline} onChange={(e) => setInfo({ ...info, deadline: e.target.value })} placeholder="yyyy/mm/dd" required />
-        </Form.Item>
-        <Form.Item label="개강일">
-          <Input value={info.start} onChange={(e) => setInfo({ ...info, start: e.target.value })} placeholder="yyyy/mm/dd" required />
-        </Form.Item>
-        <Form.Item label="종강일">
-          <Input value={info.end} onChange={(e) => setInfo({ ...info, end: e.target.value })} placeholder="yyyy/mm/dd" required />
-        </Form.Item>
-        <Button className="bg-green-500 w-full" type="primary" htmlType="submit" onSubmit={submitHandler}>
-          Submit
-        </Button>
-      </Form>
     </section>
   )
 }
