@@ -4,6 +4,7 @@ import { Button, Form, Input, Select } from 'antd'
 import { useRouter } from 'next/navigation'
 import { useContents } from '@/hooks/contents'
 import { Content } from '@/service/content'
+import DatePicker from './ui/DatePicker'
 
 const { TextArea } = Input
 
@@ -67,8 +68,55 @@ export default function InputForm({ content, id }: Props) {
     router.push('/')
   }
 
+  const handleDateChange = (date: Date | null) => {
+    console.log(date)
+  }
+
   return (
     <section className="w-full max-w-3xl p-4">
+      <form className="form-control flex flex-col gap-8">
+        <div className="w-full sm:flex gap-2 items-center">
+          <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
+            <span className="label-text">교육과정 이름</span>
+          </label>
+          <input type="text" placeholder="Type here" className="input w-full max-w-xl input-sm md:input-md" />
+        </div>
+        <div className="w-full sm:flex sm:flex-row gap-2 flex-col sm:items-start">
+          <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
+            <span className="label-text">상세설명</span>
+          </label>
+          <textarea placeholder="Type here" className="textarea w-full max-w-xl textarea-sm md:textarea-md h-32 " />
+        </div>
+        <div className="w-full sm:flex gap-2 items-center ">
+          <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
+            <span className="label-text">교육과정 이름</span>
+          </label>
+          <input type="text" placeholder="Type here" className="input w-full max-w-xl input-sm md:input-md" />
+        </div>
+        <div className="w-full sm:flex gap-2 items-center ">
+          <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
+            <span className="label-text">교육과정 키워드</span>
+          </label>
+          <input type="text" placeholder="Type here" className="input w-full max-w-xl input-sm md:input-md" />
+        </div>
+        <div className="w-full sm:flex gap-2 items-center ">
+          <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
+            <span className="label-text">이벤트</span>
+          </label>
+          <select className="select select-sm md:select-md w-full max-w-xl">
+            <option value={'event'}>event</option>
+            <option value={'채용연계'}>채용연계</option>
+            <option value={'전공무관'}>전공무관</option>
+            <option value={'전액지원'}>전액지원</option>
+          </select>
+        </div>
+        <div className="w-full sm:flex gap-2 items-center ">
+          <label className="label w-auto sm:w-32 sm:flex sm:justify-end">
+            <span className="label-text">모집 마감 날짜</span>
+          </label>
+          <DatePicker onDateChange={handleDateChange} />
+        </div>
+      </form>
       <Form labelCol={{ span: 4 }} wrapperCol={{ span: 14 }} layout="horizontal" style={{ maxWidth: 800 }} onFinish={submitHandler}>
         <Form.Item label="교육과정 이름">
           <Input value={info.title} onChange={(e) => setInfo({ ...info, title: e.target.value })} required />

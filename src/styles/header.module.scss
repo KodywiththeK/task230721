@@ -20,15 +20,10 @@
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-.title {
-  font-size: 22px;
-  font-weight: 600;
-}
-
 .menuBar {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
   padding: 2px;
   font-size: 18px;
 }

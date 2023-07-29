@@ -22,7 +22,6 @@ export async function DELETE(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const { id, info } = await req.json()
-  console.log(id, info)
   if (id === undefined && !info) {
     return new Response('Bad Request', { status: 400 })
   }

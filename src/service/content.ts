@@ -1,6 +1,4 @@
 import { NewContentType } from '@/components/InputForm'
-import { readFile } from 'fs/promises'
-import path from 'path'
 import { cache } from 'react'
 
 export interface Content {
@@ -17,11 +15,17 @@ export interface Content {
 }
 
 export const getAllContents = async () => {
-  return fetch(process.env.API_BASE_URL || '', { cache: 'no-cache' }).then<Content[]>((res) => res.json())
+  return fetch(process.env.API_BASE_URL || '', {
+    method: 'GET',
+    cache: 'no-cache',
+  }).then<Content[]>((res) => res.json())
 }
 
 export async function getContentData(id: number): Promise<Content> {
-  return fetch((process.env.API_BASE_URL || '') + `/${id}`, { cache: 'no-store' }).then<Content>((res) => res.json())
+  return fetch((process.env.API_BASE_URL || '') + `/${id}`, {
+    method: 'GET',
+    next: { revalidate: 0 },
+  }).then<Content>((res) => res.json())
 }
 
 export async function handleLikes(id: string, likes: string) {

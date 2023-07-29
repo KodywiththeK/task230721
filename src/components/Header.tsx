@@ -27,12 +27,12 @@ export default function Header() {
   return (
     <header className={styles.header}>
       <Link href={'/'} aria-label="Home">
-        <h1 className={styles.title}>부트텐트</h1>
+        <h1 className={`${styles.title} text-xl font-bold sm:text-2xl`}>부트텐트</h1>
       </Link>
       <nav>
         <ul className={styles.menuBar}>
           {menu.map((item) => (
-            <li key={item.href} style={{ textDecorationLine: pathname === item.href ? 'underline' : '' }}>
+            <li key={item.href} className="text-sm sm:text-[16px]" style={{ textDecorationLine: pathname === item.href ? 'underline' : '' }}>
               <Link href={item.href} aria-label={item.title}>
                 {item.title}
               </Link>

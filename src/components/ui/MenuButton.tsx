@@ -18,27 +18,18 @@ export default function MenuButton({ id }: { id: number }) {
     } else router.push(`/edit/${id}`)
   }
 
-  const content = (
-    <div className="p-1 flex flex-col">
-      {['수정하기', '삭제하기'].map((item) => (
-        <button onClick={(e) => onClickAction(e, item, id)} key={item} className="hover:bg-sky-300 px-2 py-1 rounded-lg">
-          {item}
-        </button>
-      ))}
-    </div>
-  )
   return (
-    <Popover content={content}>
-      <Button
-        type="primary"
-        className="bg-neutral-100"
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-        }}
-      >
-        <BsThreeDots color="black" />
-      </Button>
-    </Popover>
+    <div className="dropdown dropdown-left">
+      <label tabIndex={0} className="btn ml-1" onClick={(e) => e.preventDefault()}>
+        <BsThreeDots />
+      </label>
+      <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-32">
+        {['수정하기', '삭제하기'].map((item) => (
+          <li key={item}>
+            <button onClick={(e) => onClickAction(e, item, id)}>{item}</button>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

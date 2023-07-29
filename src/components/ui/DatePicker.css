@@ -1,0 +1,71 @@
+/* src/DatePicker.css */
+
+.datepicker-container {
+  width: 240px;
+}
+
+.datepicker {
+  top: 100%;
+  left: 0;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-header {
+  background-color: #f3f4f6;
+}
+
+.calendar-days,
+.calendar-years,
+.calendar-months {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-days div,
+.calendar-years div,
+.calendar-months div {
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.calendar-days div:hover,
+.calendar-years div:hover,
+.calendar-months div:hover {
+  background-color: #f3f4f6;
+}
+
+.calendar-days div:hover.bg-blue-500,
+.calendar-years div:hover.bg-blue-500,
+.calendar-months div:hover.bg-blue-500 {
+  background-color: #2563eb;
+}
+
+.calendar-days div.bg-blue-500,
+.calendar-years div.bg-blue-500,
+.calendar-months div.bg-blue-500 {
+  background-color: #2563eb;
+}
+
+.calendar-days div.text-white,
+.calendar-years div.text-white,
+.calendar-months div.text-white {
+  color: #fff;
+}
+
+.calendar-days,
+.calendar-years,
+.calendar-months {
+  display: none;
+}
+
+.datepicker.active .calendar-days,
+.datepicker.active .calendar-years,
+.datepicker.active .calendar-months {
+  display: grid;
+}
