@@ -26,7 +26,7 @@ export default function DatePicker({ onDateChange, originalData }: DatePickerPro
     setSelectedDate(date)
     setCurrentMonth(date.getMonth())
     onDateChange(makeFormedDate(date))
-    setShowCalendar(false)
+    // setShowCalendar(false)
     console.log(makeFormedDate(date))
   }
 

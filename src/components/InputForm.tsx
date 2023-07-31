@@ -65,6 +65,7 @@ export default function InputForm({ content, id }: Props) {
       await editCamp({ id: Number(id), info: info })
     }
     await refetchContents()
+    router.refresh('/')
     router.push('/')
   }
 

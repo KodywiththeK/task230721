@@ -26,13 +26,11 @@ export default function RangePicker({ onRangeChange, originStartDate, originEndD
   }, [originEndDate, originStartDate])
 
   const handleDateSelect = (date: Date) => {
-    if (!selectedStartDate) {
+    if (!selectedStartDate && !selectedEndDate) {
       setSelectedStartDate(date)
-      onRangeChange(makeFormedDate(date), makeFormedDate(date))
-    } else if (!selectedEndDate) {
+    } else if (selectedStartDate && !selectedEndDate) {
       setSelectedEndDate(date)
       onRangeChange(makeFormedDate(selectedStartDate), makeFormedDate(date))
-      setShowCalendar(false)
     } else {
       setSelectedStartDate(date)
       setSelectedEndDate(null)
@@ -43,6 +41,8 @@ export default function RangePicker({ onRangeChange, originStartDate, originEndD
   const handleOutsideClick = (event: MouseEvent) => {
     if (calendarContainerRef.current && !calendarContainerRef.current.contains(event.target as Node) && inputRef.current && !inputRef.current.contains(event.target as Node)) {
       setShowCalendar(false)
+      // setSelectedEndDate(null)
+      // setSelectedStartDate(null)
     }
   }
 
@@ -83,7 +83,7 @@ export default function RangePicker({ onRangeChange, originStartDate, originEndD
           const isStartSelected = isSameDay(date, selectedStartDate)
           const isEndSelected = isSameDay(date, selectedEndDate)
           const isInRange = selectedStartDate && selectedEndDate && date >= selectedStartDate && date <= selectedEndDate
-          const isDisabled = selectedStartDate && date < selectedStartDate && !selectedEndDate
+          const isDisabled = selectedStartDate && date < selectedStartDate && selectedEndDate === null
 
           calendarRow.push(
             <div key={currentDay} className={`${isSunday && 'text-red-600'} flex justify-center items-center w-full rounded-full aspect-square cursor-pointer ${getDateClassName(isStartSelected, isEndSelected, !!isInRange, !!isDisabled, isSunday)}`} onClick={() => !isDisabled && handleDateSelect(date)}>
